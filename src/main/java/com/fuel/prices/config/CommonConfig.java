@@ -2,6 +2,7 @@ package com.fuel.prices.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fuel.prices.service.CSVLoader;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
@@ -23,6 +24,7 @@ public class CommonConfig {
   @PostConstruct
   public void loadCSV() throws IOException {
     objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    objectMapper.registerModule(new JavaTimeModule());
     csvLoader.readCSV();
   }
 }

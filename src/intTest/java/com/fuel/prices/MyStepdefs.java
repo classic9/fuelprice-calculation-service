@@ -7,6 +7,9 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.json.JSONException;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -22,12 +25,12 @@ public class MyStepdefs {
 
   @Given("the path to query fuel cost calculation is {string}")
   public void thePathToQueryFuelCostCalculationIs(String path) {
-    this.path = path + "?";
+    this.path = path+"?";
   }
 
   @And("mandatory request params {string} is {string}")
   public void mandatoryRequestParamsIs(String key, String value) {
-    path = String.format("%s?%s=%s", path, key, value);
+    path = String.format("%s&%s=%s", path, key, value);
   }
 
   @When("I make a rest call with the above params and to the above path")
@@ -43,8 +46,8 @@ public class MyStepdefs {
   }
 
   @And("response matching:")
-  public void responseMatching(String responseString) {
+  public void responseMatching(String responseString) throws JSONException {
 
-    assertThat(response.getBody(), is(responseString));
+    JSONAssert.assertEquals(response.getBody(), responseString, JSONCompareMode.LENIENT);
   }
 }

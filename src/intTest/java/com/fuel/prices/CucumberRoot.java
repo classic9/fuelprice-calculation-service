@@ -1,5 +1,6 @@
 package com.fuel.prices;
 
+import com.fuel.prices.config.CommonConfig;
 import cucumber.api.java.Before;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(classes = {
-    FuelPriceCalculationEngine.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+    FuelPriceCalculationEngine.class, CommonConfig.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration")
 public class CucumberRoot {
 
