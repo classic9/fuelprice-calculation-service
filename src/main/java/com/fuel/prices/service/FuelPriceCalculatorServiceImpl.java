@@ -7,7 +7,6 @@ import com.fuel.prices.model.FuelType;
 import com.fuel.prices.repo.DutyRateRepo;
 import com.fuel.prices.repo.FuelPriceRepo;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,7 @@ public class FuelPriceCalculatorServiceImpl implements FuelPriceCalculatorServic
       BigDecimal vat) {
     BigDecimal valueBeforeTax = price.add(duty);
     BigDecimal tax = valueBeforeTax.divide(BigDecimal.valueOf(100))
-        .multiply(vat).setScale(0, Roundin);
+        .multiply(vat);//.setScale(0, Roundin);
     return valueBeforeTax.add(tax);
   }
 }
