@@ -5,7 +5,6 @@ import com.fuel.prices.model.FuelPrice;
 import com.fuel.prices.model.FuelType;
 import com.fuel.prices.model.ResponseTemplate;
 import com.fuel.prices.repo.FuelPriceRepo;
-import com.fuel.prices.service.CSVLoader;
 import com.fuel.prices.service.FuelPriceCalculatorService;
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class FuelPriceCalculationController {
 
-  @Autowired
-  private CSVLoader csvLoader;
+  private final FuelPriceRepo fuelPriceRepo;
+  private FuelPriceCalculatorService fuelPriceCalculatorService;
 
   @Autowired
-  private FuelPriceRepo fuelPriceRepo;
-  private FuelPriceCalculatorService fuelPriceCalculatorService;
+  public FuelPriceCalculationController(FuelPriceRepo fuelPriceRepo) {
+    this.fuelPriceRepo = fuelPriceRepo;
+  }
 
   @GetMapping("/calculate/fuelprice")
   public ResponseTemplate<CalculationResult> calculateFuelPrice(
@@ -32,7 +32,8 @@ public class FuelPriceCalculationController {
       @RequestParam("milesPerGallon") int milesPerGallon,
       @RequestParam("mileage") int mileage) {
 
-    fuelPriceCalculatorService.calculate(date, fuelType, milesPerGallon, mileage);
+    ResponseTemplate<CalculationResult> result = new ResponseTemplate<>();
+    result.setData(fuelPriceCalculatorService.calculate(date, fuelType, milesPerGallon, mileage));
     return new ResponseTemplate<>();
   }
 

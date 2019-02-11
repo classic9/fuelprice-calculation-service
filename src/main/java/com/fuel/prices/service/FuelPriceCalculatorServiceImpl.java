@@ -25,23 +25,28 @@ public class FuelPriceCalculatorServiceImpl implements FuelPriceCalculatorServic
   public CalculationResult calculate(LocalDate localDate, FuelType fuelType, int milesPerGallon,
       int mileage) {
 
-    BigDecimal totalPriceForAGivenDate = getTotalFuelCostForAGivenDate(localDate, fuelType,
-        milesPerGallon, mileage);
-    BigDecimal totalPriceForToday = getTotalFuelCostForAGivenDate(LocalDate.now(), fuelType,
-        milesPerGallon, mileage);
+    FuelPrice fuelPriceGivenDate = fuelPriceRepo
+        .findTop1ByFromDateBeforeOrderByFromDateDesc(localDate);
+    FuelPrice fuelPriceToday = fuelPriceRepo
+        .findTop1ByFromDateBeforeOrderByFromDateDesc(LocalDate.now());
+    BigDecimal totalPriceForAGivenDate = getTotalFuelCostForAGivenDate(fuelType,
+        milesPerGallon, mileage, fuelPriceGivenDate);
+    BigDecimal totalPriceForToday = getTotalFuelCostForAGivenDate(fuelType,
+        milesPerGallon, mileage, fuelPriceToday);
 
     CalculationResult calculationResult = new CalculationResult();
     calculationResult.setTotalValueOnDateGiven(totalPriceForAGivenDate);
+    calculationResult.setFuelPriceOnGivenDate(fuelPriceGivenDate);
     calculationResult.setTotalValueToday(totalPriceForToday);
+    calculationResult.setFuelPriceToday(fuelPriceToday);
     calculationResult
         .setChangeInValueWhenComparedToToday(totalPriceForToday.subtract(totalPriceForAGivenDate));
 
     return calculationResult;
   }
 
-  private BigDecimal getTotalFuelCostForAGivenDate(LocalDate givenDate, FuelType fuelType,
-      int milesPerGallon, int mileage) {
-    FuelPrice fuelPrice = fuelPriceRepo.findTop1ByFromDateBeforeOrderByFromDateDesc(givenDate);
+  private BigDecimal getTotalFuelCostForAGivenDate(FuelType fuelType,
+      int milesPerGallon, int mileage, FuelPrice fuelPrice) {
 
     BigDecimal totalFuelPricePerLiter;
     if (fuelType == FuelType.ULSD) {
