@@ -21,8 +21,10 @@ public class FuelPriceCalculationController {
   private FuelPriceCalculatorService fuelPriceCalculatorService;
 
   @Autowired
-  public FuelPriceCalculationController(FuelPriceRepo fuelPriceRepo) {
+  public FuelPriceCalculationController(FuelPriceRepo fuelPriceRepo,
+      FuelPriceCalculatorService fuelPriceCalculatorService) {
     this.fuelPriceRepo = fuelPriceRepo;
+    this.fuelPriceCalculatorService = fuelPriceCalculatorService;
   }
 
   @GetMapping("/calculate/fuelprice")

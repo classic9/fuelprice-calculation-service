@@ -10,6 +10,11 @@ buildscript {
     }
 }
 
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '5.1.1' //we want gradle 5.1.1 to run this project
+}
+
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'

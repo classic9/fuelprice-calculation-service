@@ -1,6 +1,5 @@
 package com.fuel.prices.service;
 
-import com.fuel.prices.model.DutyRate;
 import com.fuel.prices.model.FuelPrice;
 import com.fuel.prices.repo.FuelPriceRepo;
 import com.opencsv.CSVReader;
@@ -35,18 +34,15 @@ public class CSVLoader {
   private DateTimeFormatter fuelPriceDateFormatter;
   private DateTimeFormatter dutyRateDateFormatter;
 
-  @Autowired
   private FuelPriceRepo fuelPriceRepo;
 
   @Autowired
   public CSVLoader(FuelPriceRepo fuelPriceRepo) {
     this.fuelPriceRepo = fuelPriceRepo;
-
     this.fuelPriceDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     this.dutyRateDateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
     this.fuelPriceDateFormatter.withLocale(Locale.ENGLISH);
     this.dutyRateDateFormatter.withLocale(Locale.ENGLISH);
-
   }
 
   public void readCSV() throws IOException {
@@ -56,7 +52,6 @@ public class CSVLoader {
         readCSV(inputStreamReader);
       }
     }
-
   }
 
   /**
@@ -71,7 +66,6 @@ public class CSVLoader {
             ifRowContainsDutyRateInformationSaveInCache(row);
           }
         });
-
       }
     }
     log.info("Read and Saved stats: Fuel prices count: '{}'",

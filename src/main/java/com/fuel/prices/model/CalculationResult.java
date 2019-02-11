@@ -10,5 +10,5 @@ public class CalculationResult {
   private FuelPrice fuelPriceToday;
   private BigDecimal totalValueOnDateGiven;
   private FuelPrice fuelPriceOnGivenDate;
-  private BigDecimal ChangeInValueWhenComparedToToday;
+  private BigDecimal changeInValueWhenComparedToToday;
 }
