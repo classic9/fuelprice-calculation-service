@@ -27,6 +27,10 @@ public class FuelPriceCalculatorServiceImpl implements FuelPriceCalculatorServic
 
     FuelPrice fuelPriceGivenDate = fuelPriceRepo
         .findTop1ByFromDateBeforeOrderByFromDateDesc(localDate);
+
+    if(fuelPriceGivenDate==null){ //no results found for the date, very likely a a date older than the values exists in db.
+      return new CalculationResult();
+    }
     FuelPrice fuelPriceToday = fuelPriceRepo
         .findTop1ByFromDateBeforeOrderByFromDateDesc(LocalDate.now());
     BigDecimal totalPriceForAGivenDate = getTotalFuelCostForAGivenDate(fuelType,

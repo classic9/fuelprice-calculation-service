@@ -36,7 +36,11 @@ public class FuelPriceCalculationController {
             @RequestParam("mileage") int mileage) {
 
         ResponseTemplate<CalculationResult> result = new ResponseTemplate<>();
-        result.setData(fuelPriceCalculatorService.calculate(date, fuelType, milesPerGallon, mileage));
+        CalculationResult calculationResult = fuelPriceCalculatorService.calculate(date, fuelType, milesPerGallon, mileage);
+        if(calculationResult.getFuelPriceOnGivenDate()==null){
+            result.setError("No data found for a given date.");
+        }
+        result.setData(calculationResult);
         return result;
     }
 
