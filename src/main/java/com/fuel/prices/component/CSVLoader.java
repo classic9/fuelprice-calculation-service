@@ -1,4 +1,4 @@
-package com.fuel.prices.service;
+package com.fuel.prices.component;
 
 import com.fuel.prices.model.FuelPrice;
 import com.fuel.prices.repo.FuelPriceRepo;

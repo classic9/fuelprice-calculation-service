@@ -3,7 +3,7 @@ package com.fuel.prices.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fuel.prices.service.CSVLoader;
+import com.fuel.prices.component.CSVLoader;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
