@@ -20,11 +20,9 @@ public class FuelPriceCalculatorServiceImplTest {
 
   @Test
   public void testCalculateFuelPriceFor1Litre() {
-//    BigDecimal totalPrice = fuelPriceCalculatorService
-//        .calculateFuelPriceFor1Litre(BigDecimal.valueOf(56.70), BigDecimal.valueOf(57.95),
-//            BigDecimal.valueOf(20));
-//    assertEquals(totalPrice, BigDecimal.valueOf(137.58));
-
+    BigDecimal totalPrice = fuelPriceCalculatorService
+        .calculateFuelPriceFor1Litre(BigDecimal.valueOf(56.70), BigDecimal.valueOf(57.95),
+            BigDecimal.valueOf(20));
+    assertEquals(BigDecimal.valueOf(137.58), totalPrice);
   }
-
 }

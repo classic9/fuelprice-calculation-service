@@ -5,6 +5,7 @@ import com.fuel.prices.model.FuelPrice;
 import com.fuel.prices.model.FuelType;
 import com.fuel.prices.repo.FuelPriceRepo;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,31 +13,60 @@ import org.springframework.stereotype.Service;
 @Service
 public class FuelPriceCalculatorServiceImpl implements FuelPriceCalculatorService {
 
+  private static final double GALLONS_LITERS = 4.546092;
+  private final FuelPriceRepo fuelPriceRepo;
+
   @Autowired
-  private FuelPriceRepo fuelPriceRepo;
+  public FuelPriceCalculatorServiceImpl(FuelPriceRepo fuelPriceRepo) {
+    this.fuelPriceRepo = fuelPriceRepo;
+  }
 
   @Override
   public CalculationResult calculate(LocalDate localDate, FuelType fuelType, int milesPerGallon,
       int mileage) {
 
-    FuelPrice fuelPrice = fuelPriceRepo.findTop1ByFromDateBeforeOrderByFromDateDesc(localDate);
+    BigDecimal totalPriceForAGivenDate = getTotalFuelCostForAGivenDate(localDate, fuelType,
+        milesPerGallon, mileage);
+    BigDecimal totalPriceForToday = getTotalFuelCostForAGivenDate(LocalDate.now(), fuelType,
+        milesPerGallon, mileage);
 
-    if (fuelType == FuelType.ULSD) {
-      BigDecimal totalFuelPrice = calculateFuelPriceFor1Litre(fuelPrice.getUlsdPrice(),
-          fuelPrice.getUlsdDuty(), fuelPrice.getUlsdVat());
-    } else {
-      BigDecimal totalFuelPrice = calculateFuelPriceFor1Litre(fuelPrice.getUlspPrice(),
-          fuelPrice.getUlspDuty(), fuelPrice.getUlspVat());
-    }
-    return new CalculationResult();
+    CalculationResult calculationResult = new CalculationResult();
+    calculationResult.setTotalValueOnDateGiven(totalPriceForAGivenDate);
+    calculationResult.setTotalValueToday(totalPriceForToday);
+    calculationResult
+        .setChangeInValueWhenComparedToToday(totalPriceForToday.subtract(totalPriceForAGivenDate));
 
+    return calculationResult;
   }
 
-  BigDecimal calculateFuelPriceFor1Litre(BigDecimal price, BigDecimal duty,
-      BigDecimal vat) {
+  private BigDecimal getTotalFuelCostForAGivenDate(LocalDate givenDate, FuelType fuelType,
+      int milesPerGallon, int mileage) {
+    FuelPrice fuelPrice = fuelPriceRepo.findTop1ByFromDateBeforeOrderByFromDateDesc(givenDate);
+
+    BigDecimal totalFuelPricePerLiter;
+    if (fuelType == FuelType.ULSD) {
+      totalFuelPricePerLiter = calculateFuelPriceFor1Litre(fuelPrice.getUlsdPrice(),
+          fuelPrice.getUlsdDuty(), fuelPrice.getUlsdVat());
+    } else {
+      totalFuelPricePerLiter = calculateFuelPriceFor1Litre(fuelPrice.getUlspPrice(),
+          fuelPrice.getUlspDuty(), fuelPrice.getUlspVat());
+    }
+
+    BigDecimal totalGallonsUsed = BigDecimal.valueOf(mileage)
+        .divide(BigDecimal.valueOf(milesPerGallon));
+
+    BigDecimal totalLitersUsed = BigDecimal.valueOf(GALLONS_LITERS)
+        .multiply(totalGallonsUsed);
+
+    return totalLitersUsed.multiply(totalFuelPricePerLiter);
+  }
+
+  BigDecimal calculateFuelPriceFor1Litre(BigDecimal price, BigDecimal duty, BigDecimal vat) {
     BigDecimal valueBeforeTax = price.add(duty);
-    BigDecimal tax = valueBeforeTax.divide(BigDecimal.valueOf(100))
-        .multiply(vat);//.setScale(0, Roundin);
+    BigDecimal taxPercentageValue = valueBeforeTax.multiply(BigDecimal.valueOf(0.01)).setScale(4,
+        RoundingMode.UP);
+    BigDecimal tax = taxPercentageValue.multiply(vat)
+        .setScale(2, RoundingMode.UP); //Rounding up to two decimal places.
     return valueBeforeTax.add(tax);
   }
 }
