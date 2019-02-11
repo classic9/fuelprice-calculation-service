@@ -1,10 +1,8 @@
 package com.fuel.prices.service;
 
 import com.fuel.prices.model.CalculationResult;
-import com.fuel.prices.model.DutyRate;
 import com.fuel.prices.model.FuelPrice;
 import com.fuel.prices.model.FuelType;
-import com.fuel.prices.repo.DutyRateRepo;
 import com.fuel.prices.repo.FuelPriceRepo;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,15 +15,11 @@ public class FuelPriceCalculatorServiceImpl implements FuelPriceCalculatorServic
   @Autowired
   private FuelPriceRepo fuelPriceRepo;
 
-  @Autowired
-  private DutyRateRepo dutyRateRepo;
-
   @Override
   public CalculationResult calculate(LocalDate localDate, FuelType fuelType, int milesPerGallon,
       int mileage) {
 
     FuelPrice fuelPrice = fuelPriceRepo.findTop1ByFromDateBeforeOrderByFromDateDesc(localDate);
-    DutyRate dutyRate = dutyRateRepo.findTop1ByValidFromBeforeOrderByFromDateDesc(localDate);
 
     if (fuelType == FuelType.ULSD) {
       BigDecimal totalFuelPrice = calculateFuelPriceFor1Litre(fuelPrice.getUlsdPrice(),

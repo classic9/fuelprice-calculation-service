@@ -2,7 +2,6 @@ package com.fuel.prices.service;
 
 import com.fuel.prices.model.DutyRate;
 import com.fuel.prices.model.FuelPrice;
-import com.fuel.prices.repo.DutyRateRepo;
 import com.fuel.prices.repo.FuelPriceRepo;
 import com.opencsv.CSVReader;
 import java.io.BufferedReader;
@@ -37,13 +36,10 @@ public class CSVLoader {
   private DateTimeFormatter dutyRateDateFormatter;
 
   @Autowired
-  private DutyRateRepo dutyRateRepo;
-  @Autowired
   private FuelPriceRepo fuelPriceRepo;
 
   @Autowired
-  public CSVLoader(DutyRateRepo dutyRateRepo, FuelPriceRepo fuelPriceRepo) {
-    this.dutyRateRepo = dutyRateRepo;
+  public CSVLoader(FuelPriceRepo fuelPriceRepo) {
     this.fuelPriceRepo = fuelPriceRepo;
 
     this.fuelPriceDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -78,8 +74,8 @@ public class CSVLoader {
 
       }
     }
-    log.info("Read and Saved stats: Fuel prices count: '{}', Duty rates count: '{}'",
-        fuelPriceRepo.count(), dutyRateRepo.count());
+    log.info("Read and Saved stats: Fuel prices count: '{}'",
+        fuelPriceRepo.count());
   }
 
   private void ifRowContainsDutyRateInformationSaveInCache(String[] row) {
@@ -93,7 +89,6 @@ public class CSVLoader {
         BigDecimal rate = stringToBigDecimal(13, row);
         dutyRate.setValidFrom(LocalDate.parse(matcher.group(1), dutyRateDateFormatter));
         dutyRate.setRate(rate);
-        dutyRateRepo.save(dutyRate);
         log.info("localDate: {}, dutyRate: {}", localDate, dutyRate);
       }
     } catch (DateTimeParseException | NumberFormatException exception) {

@@ -56,7 +56,7 @@ dependencies {
     implementation 'com.opencsv:opencsv:4.5'
     implementation 'com.h2database:h2:1.4.194'
     implementation 'org.hibernate:hibernate-entitymanager'
-    implementation 'org.springframework.data:spring-data-jpa:1.11.1.RELEASE'
+    implementation 'org.springframework.data:spring-data-jpa:2.1.2.RELEASE'
 
     compileOnly 'org.projectlombok:lombok'
 
