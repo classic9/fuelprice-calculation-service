@@ -14,8 +14,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +30,6 @@ public class CSVLoader {
   private String dutyStringValidator;  //validates Strings like: Duty rate per litre (£) from 7 March 2001
 
   private DateTimeFormatter fuelPriceDateFormatter;
-  private DateTimeFormatter dutyRateDateFormatter;
 
   private FuelPriceRepo fuelPriceRepo;
 
@@ -40,9 +37,7 @@ public class CSVLoader {
   public CSVLoader(FuelPriceRepo fuelPriceRepo) {
     this.fuelPriceRepo = fuelPriceRepo;
     this.fuelPriceDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    this.dutyRateDateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
     this.fuelPriceDateFormatter.withLocale(Locale.ENGLISH);
-    this.dutyRateDateFormatter.withLocale(Locale.ENGLISH);
   }
 
   public void readCSV() throws IOException {
@@ -60,36 +55,11 @@ public class CSVLoader {
   public void readCSV(InputStreamReader inputStreamReader) throws IOException {
     try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
       try (CSVReader csvReader = new CSVReader(bufferedReader)) {
-        csvReader.forEach(row -> {
-          ifRowContainsFuelDataSaveInCache(row);
-          if (row[8].matches(dutyStringValidator)) {
-            ifRowContainsDutyRateInformationSaveInCache(row);
-          }
-        });
+        csvReader.forEach(this::ifRowContainsFuelDataSaveInCache);
       }
     }
     log.info("Read and Saved stats: Fuel prices count: '{}'",
         fuelPriceRepo.count());
-  }
-
-  private void ifRowContainsDutyRateInformationSaveInCache(String[] row) {
-    Pattern pattern = Pattern.compile(dutyStringValidator);
-    Matcher matcher = pattern.matcher(row[8]);
-    matcher.find();
-    try {
-      if (matcher.matches()) {
-        DutyRate dutyRate = new DutyRate();
-        LocalDate localDate = LocalDate.parse(matcher.group(1), dutyRateDateFormatter);
-        BigDecimal rate = stringToBigDecimal(13, row);
-        dutyRate.setValidFrom(LocalDate.parse(matcher.group(1), dutyRateDateFormatter));
-        dutyRate.setRate(rate);
-        log.info("localDate: {}, dutyRate: {}", localDate, dutyRate);
-      }
-    } catch (DateTimeParseException | NumberFormatException exception) {
-      log.warn(
-          "skipping row, for dutyRate: {}, as the column is non-date, or corresponding values are null or empty, {}",
-          Arrays.asList(row), exception.getMessage());
-    }
   }
 
   private void ifRowContainsFuelDataSaveInCache(String[] row) {
