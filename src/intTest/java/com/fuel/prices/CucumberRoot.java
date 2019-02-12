@@ -18,8 +18,6 @@ public class CucumberRoot {
 
   @Before
   public void before() {
-    System.getProperties().put("http.proxyHost", "http://10.1.4.44");
-    System.getProperties().put("http.proxyPort", "8080");
 
     template.getRestTemplate()
         .setInterceptors(Collections.singletonList((request, body, execution) -> {

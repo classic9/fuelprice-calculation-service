@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 public class MyStepdefs {
 
   private String path;
-  private ResponseEntity<String> response; // output
+  private ResponseEntity<String> response;
 
   @Autowired
   TestRestTemplate template;
